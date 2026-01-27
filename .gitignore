@@ -1,0 +1,30 @@
+# Fichiers à ignorer par Git
+
+# Variables d'environnement (contient les secrets)
+.env
+.streamlit/secrets.toml
+
+# Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environnements virtuels
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Données temporaires
+data/*.csv
+data/*.png
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
