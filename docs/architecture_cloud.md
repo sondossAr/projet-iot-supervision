@@ -5,8 +5,6 @@
 # Ce document décrit l'architecture de déploiement
 # pour la mise en production du système IoT.
 #
-# Auteur : Projet Examen 5 BIM IA
-# Date : Janvier 2026
 # ============================================
 
 ```
@@ -59,7 +57,7 @@
                     │  ┌──────────────────────────┐  │
                     │  │  cloud_integration.py    │  │
                     │  │  • MongoDB storage       │  │
-                    │  │  • SendGrid alerts       │  │
+                    │  │  • Gmail SMTP alerts   │  │
                     │  └──────────────────────────┘  │
                     └────────────────┬───────────────┘
                                      │
@@ -67,13 +65,13 @@
               │                      │                      │
               ▼                      ▼                      ▼
    ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
-   │  MONGODB ATLAS   │   │   SENDGRID       │   │ STREAMLIT CLOUD  │
+   │  MONGODB ATLAS   │   │   GMAIL SMTP     │   │ STREAMLIT CLOUD  │
    │                  │   │                  │   │                  │
    │  • Stockage NoSQL│   │  • Alertes email │   │  • Dashboard web │
-   │  • Cluster M0    │   │  • Templates     │   │  • Auto-refresh  │
-   │  • Backup auto   │   │  • Analytics     │   │  • HTTPS gratuit │
+   │  • Cluster M0    │   │  • App Password  │   │  • Auto-refresh  │
+   │  • Backup auto   │   │  • Gratuit       │   │  • HTTPS gratuit │
    │                  │   │                  │   │                  │
-   │  Gratuit: 512 MB │   │  Gratuit: 100/j  │   │  Gratuit: 1 app  │
+   │  Gratuit: 512 MB │   │  Gratuit: 500/j  │   │  Gratuit: 1 app  │
    └──────────────────┘   └──────────────────┘   └──────────────────┘
 
 
@@ -94,7 +92,7 @@
      MongoDB Atlas → Insert mesures → Insert anomalies → Historisation
 
   5. ALERTE
-     SendGrid → Email automatique → Notification admin
+     Gmail SMTP → Email automatique → Notification admin
 
   6. VISUALISATION
      Streamlit Cloud → Lecture MongoDB → Graphiques temps réel
@@ -119,7 +117,7 @@
   ─────────────────┼─────────────────────────────┼──────────────────────────
   HiveMQ Cloud     │ Serverless (gratuit)        │ 10 GB/mois
   MongoDB Atlas    │ M0 Cluster                  │ 512 MB storage
-  SendGrid         │ Free tier                   │ 100 emails/jour
+  Gmail SMTP       │ Gratuit                     │ 500 emails/jour
   Streamlit Cloud  │ Community tier              │ 1 app publique
   Railway.app      │ Hobby tier                  │ 500h/mois
 
@@ -167,9 +165,9 @@ projet_IoT/
 4. Whitelist les IP (0.0.0.0/0 pour le développement)
 5. Récupérer l'URI de connexion
 
-## 5. Configurer SendGrid
+## 5. Configurer Gmail SMTP
 
-1. Créer un compte sur https://sendgrid.com
-2. Créer une API Key
-3. Vérifier l'adresse email d'envoi
+1. Activer 2FA sur votre compte Gmail
+2. Créer un App Password: Google Account → Security → App passwords
+3. Ajouter dans .env: SMTP_USER, SMTP_PASSWORD, EMAIL_TO
 4. Tester l'envoi d'un email

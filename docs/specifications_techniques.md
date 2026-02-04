@@ -252,4 +252,3 @@ pip install -r requirements.txt
 
 ---
 
-*Document généré le 27/01/2026*

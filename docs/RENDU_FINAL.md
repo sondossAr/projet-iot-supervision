@@ -27,7 +27,7 @@ Ce projet implémente un système complet de supervision IoT incluant :
 | Réseau IoT simulé | ✅ | 3 capteurs virtuels publiant vers HiveMQ Cloud |
 | IA embarquée | ✅ | Détection par Isolation Forest et Z-score |
 | Dashboard web | ✅ | Interface Streamlit temps réel |
-| Architecture Cloud | ✅ | TLS, MongoDB Atlas, SendGrid |
+| Architecture Cloud | ✅ | TLS, MongoDB Atlas, Gmail SMTP |
 
 ---
 
@@ -58,7 +58,7 @@ Ce projet implémente un système complet de supervision IoT incluant :
          ┌────────────────┼────────────────┐
          ▼                ▼                ▼
   ┌────────────┐   ┌────────────┐   ┌────────────┐
-  │  MongoDB   │   │  SendGrid  │   │ Streamlit  │
+  │  MongoDB   │   │ Gmail SMTP │   │ Streamlit  │
   │  Atlas     │   │  (Alertes) │   │ Dashboard  │
   └────────────┘   └────────────┘   └────────────┘
 ```
@@ -77,7 +77,7 @@ projet_IoT/
 │   ├── simulateur_capteurs.py         # Simulation des capteurs IoT
 │   ├── detection_anomalies.py         # Module IA de détection
 │   ├── dashboard.py                   # Interface web Streamlit
-│   └── cloud_integration.py           # Intégration MongoDB/SendGrid
+│   └── cloud_integration.py           # Intégration MongoDB
 ├── data/
 │   ├── historique.csv                 # Données historiques
 │   ├── anomalies.csv                  # Anomalies détectées
@@ -105,7 +105,7 @@ projet_IoT/
 | Dashboard | Streamlit | 1.28+ |
 | Broker MQTT | HiveMQ Cloud | - |
 | Base de données | MongoDB Atlas | - |
-| Email | SendGrid | - |
+| Email | Gmail SMTP | - |
 
 ---
 
@@ -138,7 +138,7 @@ projet_IoT/
 
 ### 4. Intégration Cloud (cloud_integration.py)
 - ✅ Stockage MongoDB Atlas
-- ✅ Service d'alertes email SendGrid
+- ✅ Service d'alertes email Gmail SMTP
 - ✅ Fichiers de déploiement générés
 - ✅ Documentation d'architecture Cloud
 
@@ -205,7 +205,7 @@ streamlit run src/dashboard.py
 |---------|-------------|-----------------|
 | HiveMQ Cloud | Broker MQTT | 10 GB/mois |
 | MongoDB Atlas | Stockage données | 512 MB |
-| SendGrid | Alertes email | 100/jour |
+| Gmail SMTP | Alertes email | 500/jour |
 | Streamlit Cloud | Dashboard web | 1 app |
 
 ### Étapes de déploiement
@@ -252,4 +252,3 @@ streamlit run src/dashboard.py
 
 ---
 
-*Document généré le 27/01/2026 - Projet Examen 5 BIM IA*
