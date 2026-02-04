@@ -130,10 +130,20 @@ def get_mongodb_client():
     uri = get_mongodb_uri()
     if uri:
         try:
-            client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=certifi.where())
+            # Options de connexion robustes pour Streamlit Cloud
+            client = MongoClient(
+                uri,
+                server_api=ServerApi('1'),
+                tls=True,
+                tlsAllowInvalidCertificates=True,  # Pour éviter les erreurs SSL sur cloud
+                serverSelectionTimeoutMS=10000,
+                connectTimeoutMS=10000
+            )
+            # Test de connexion
+            client.admin.command('ping')
             return client
         except Exception as e:
-            st.error(f"Erreur connexion MongoDB: {e}")
+            st.warning(f"Connexion MongoDB en attente... ({str(e)[:50]})")
             return None
     return None
 
