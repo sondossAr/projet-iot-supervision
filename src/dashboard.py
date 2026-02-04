@@ -27,10 +27,19 @@ import time
 from datetime import datetime, timedelta
 import json
 
+# MongoDB
+from pymongo import MongoClient
+from pymongo.server_api import ServerApi
+import certifi
+
 # Import de la configuration
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from config import dashboard_config, mqtt_config
+
+# Charger les variables d'environnement pour le mode local
+from dotenv import load_dotenv
+load_dotenv()
 
 # ============================================================================
 # CONFIGURATION DE LA PAGE STREAMLIT
@@ -106,12 +115,58 @@ st.markdown("""
 # FONCTIONS DE CHARGEMENT DES DONNÉES
 # ============================================================================
 
+def get_mongodb_uri():
+    """Récupère l'URI MongoDB depuis st.secrets ou .env"""
+    try:
+        # Mode Streamlit Cloud
+        return st.secrets["mongodb"]["uri"]
+    except:
+        # Mode local avec .env
+        return os.getenv("MONGODB_URI", "")
+
+@st.cache_resource
+def get_mongodb_client():
+    """Crée une connexion MongoDB réutilisable."""
+    uri = get_mongodb_uri()
+    if uri:
+        try:
+            client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=certifi.where())
+            return client
+        except Exception as e:
+            st.error(f"Erreur connexion MongoDB: {e}")
+            return None
+    return None
+
 @st.cache_data(ttl=5)  # Cache de 5 secondes
 def charger_historique():
     """
-    Charge le fichier historique.csv contenant toutes les mesures.
-    Retourne un DataFrame vide si le fichier n'existe pas.
+    Charge les données depuis MongoDB Atlas.
+    Fallback vers le fichier CSV si MongoDB non disponible.
     """
+    # Essayer MongoDB d'abord
+    client = get_mongodb_client()
+    if client:
+        try:
+            db = client["iot_supervision"]
+            collection = db["mesures"]
+            
+            # Récupérer les 500 dernières mesures
+            cursor = collection.find().sort("timestamp", -1).limit(500)
+            data = list(cursor)
+            
+            if data:
+                df = pd.DataFrame(data)
+                # Convertir les timestamps
+                if "timestamp" in df.columns:
+                    df["timestamp"] = pd.to_datetime(df["timestamp"])
+                # Supprimer le champ _id de MongoDB
+                if "_id" in df.columns:
+                    df = df.drop("_id", axis=1)
+                return df
+        except Exception as e:
+            st.warning(f"Erreur MongoDB: {e}")
+    
+    # Fallback vers fichier CSV local
     chemin = os.path.join(os.path.dirname(__file__), "..", "data", "historique.csv")
     
     if os.path.exists(chemin):
@@ -129,8 +184,31 @@ def charger_historique():
 @st.cache_data(ttl=5)
 def charger_anomalies():
     """
-    Charge le fichier anomalies.csv contenant uniquement les anomalies.
+    Charge les anomalies depuis MongoDB Atlas.
+    Fallback vers le fichier CSV si MongoDB non disponible.
     """
+    # Essayer MongoDB d'abord
+    client = get_mongodb_client()
+    if client:
+        try:
+            db = client["iot_supervision"]
+            collection = db["mesures"]
+            
+            # Récupérer les anomalies
+            cursor = collection.find({"is_anomaly": True}).sort("timestamp", -1).limit(100)
+            data = list(cursor)
+            
+            if data:
+                df = pd.DataFrame(data)
+                if "timestamp" in df.columns:
+                    df["timestamp"] = pd.to_datetime(df["timestamp"])
+                if "_id" in df.columns:
+                    df = df.drop("_id", axis=1)
+                return df
+        except Exception as e:
+            pass
+    
+    # Fallback vers fichier CSV local
     chemin = os.path.join(os.path.dirname(__file__), "..", "data", "anomalies.csv")
     
     if os.path.exists(chemin):
