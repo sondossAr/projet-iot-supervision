@@ -1,16 +1,3 @@
-"""
-📧 Service d'Envoi d'Emails
-============================
-Ce module gère l'envoi d'alertes par email via Gmail SMTP.
-
-Configuration requise dans .env :
-- SMTP_HOST=smtp.gmail.com
-- SMTP_PORT=587
-- SMTP_USER=votre.email@gmail.com
-- SMTP_PASSWORD=xxxx xxxx xxxx xxxx (App Password)
-- EMAIL_TO=destinataire@email.com
-"""
-
 import os
 import smtplib
 from email.mime.text import MIMEText
@@ -24,17 +11,13 @@ load_dotenv()
 
 
 class EmailService:
-    """
-    Service d'envoi d'emails via Gmail SMTP.
-    """
     
     def __init__(self):
-        """Initialise le service email."""
         # Configuration SMTP (Gmail)
         self.smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
         self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
         self.smtp_user = os.getenv("SMTP_USER", "")
-        self.smtp_password = os.getenv("SMTP_PASSWORD", "")  # App password pour Gmail
+        self.smtp_password = os.getenv("SMTP_PASSWORD", "")  
         
         # Email de destination
         self.email_to = os.getenv("EMAIL_TO", "")
@@ -48,17 +31,6 @@ class EmailService:
             print("⚠️  Service email en mode SIMULATION (pas de credentials)")
     
     def envoyer_alerte(self, sujet: str, message: str, niveau: str = "warning") -> bool:
-        """
-        Envoie une alerte par email.
-        
-        Arguments:
-            sujet: Sujet de l'email
-            message: Corps du message (HTML supporté)
-            niveau: Niveau d'alerte (info, warning, critical)
-        
-        Retourne:
-            True si envoi réussi
-        """
         if self.mode == "simulation":
             self._afficher_simulation(sujet, message, niveau)
             return False
@@ -67,7 +39,6 @@ class EmailService:
         return False
     
     def _afficher_simulation(self, sujet: str, message: str, niveau: str):
-        """Affiche l'email en mode simulation."""
         couleurs = {"info": "🔵", "warning": "🟡", "critical": "🔴"}
         icone = couleurs.get(niveau, "⚪")
         
@@ -83,7 +54,6 @@ class EmailService:
         print("=" * 50 + "\n")
     
     def _envoyer_smtp(self, sujet: str, message: str, niveau: str) -> bool:
-        """Envoie via SMTP (Gmail)."""
         try:
             # Créer le message
             msg = MIMEMultipart("alternative")
@@ -109,7 +79,6 @@ class EmailService:
             return False
     
     def _generer_html(self, sujet: str, message: str, niveau: str) -> str:
-        """Génère le contenu HTML de l'email."""
         couleurs = {
             "info": "#2196F3",
             "warning": "#FF9800", 
@@ -141,7 +110,7 @@ class EmailService:
                     </div>
                 </div>
                 <div style="background-color: #263238; color: white; padding: 15px; text-align: center; font-size: 12px;">
-                    <p style="margin: 0;">IoT Supervision System - Projet BIM 5e année</p>
+                    <p style="margin: 0;">IoT Supervision System</p>
                     <p style="margin: 5px 0 0 0; opacity: 0.7;">Email généré automatiquement</p>
                 </div>
             </div>
@@ -150,9 +119,6 @@ class EmailService:
         """
     
     def alerte_anomalie(self, sensor_id: str, temperature: float, humidity: float):
-        """
-        Envoie une alerte pour anomalie détectée.
-        """
         sujet = f"Anomalie détectée - Capteur {sensor_id}"
         message = f"""
         <strong>🔍 Anomalie détectée par l'IA</strong><br><br>
@@ -164,9 +130,6 @@ class EmailService:
         return self.envoyer_alerte(sujet, message, "warning")
     
     def alerte_temperature_critique(self, sensor_id: str, temperature: float):
-        """
-        Envoie une alerte pour température critique.
-        """
         if temperature > 35:
             sujet = f"🔥 SURCHAUFFE - Capteur {sensor_id}"
             message = f"""
@@ -224,13 +187,3 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("✅ Tests terminés")
     print("=" * 60)
-    
-    # Instructions pour activer
-    if service.mode == "simulation":
-        print("\n📋 Pour activer l'envoi réel d'emails, ajoutez dans .env:")
-        print("\n   Gmail SMTP:")
-        print("   SMTP_HOST=smtp.gmail.com")
-        print("   SMTP_PORT=587")
-        print("   SMTP_USER=votre.email@gmail.com")
-        print("   SMTP_PASSWORD=xxxx xxxx xxxx xxxx  (App Password)")
-        print("   EMAIL_TO=destinataire@email.com")

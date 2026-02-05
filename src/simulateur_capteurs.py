@@ -1,19 +1,3 @@
-"""
-🛰️ Simulateur de Capteurs IoT
-============================
-Ce script simule 3 capteurs de température/humidité qui publient
-leurs données vers un broker MQTT Cloud (HiveMQ).
-
-Fonctionnalités :
-- Simulation de 3 capteurs (C001, C002, C003)
-- Envoi des données toutes les 3 secondes
-- Injection aléatoire d'anomalies (5% de probabilité)
-- Connexion sécurisée TLS
-
-Auteur : Projet Examen 5 BIM IA
-Date : Janvier 2026
-"""
-
 import paho.mqtt.client as mqtt
 import json
 import time
@@ -34,13 +18,6 @@ from config import mqtt_config, capteur_config
 # ============================================================================
 
 def on_connect(client, userdata, flags, reason_code, properties=None):
-    """
-    Callback appelée lors de la connexion au broker MQTT.
-    
-    Codes de retour (reason_code) :
-    - 0 / Success : Connexion réussie
-    - Autres : Erreurs diverses
-    """
     # Vérifier si la connexion est réussie
     is_success = str(reason_code) == "Success" or reason_code == 0
     
@@ -57,12 +34,10 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
 
 
 def on_publish(client, userdata, mid, properties=None, reason_code=None):
-    """Callback appelée après chaque publication réussie."""
     pass  # Silencieux pour éviter trop de logs
 
 
 def on_disconnect(client, userdata, rc, properties=None, reason_code=None):
-    """Callback appelée lors de la déconnexion."""
     if rc != 0:
         print(f"⚠️  Déconnexion inattendue (code: {rc})")
 
@@ -72,13 +47,6 @@ def on_disconnect(client, userdata, rc, properties=None, reason_code=None):
 # ============================================================================
 
 def generer_mesure_normale() -> Dict[str, float]:
-    """
-    Génère une mesure normale de température et humidité
-    basée sur les paramètres de configuration.
-    
-    Retourne :
-        Dict avec 'temperature' et 'humidity'
-    """
     temperature = capteur_config.temperature_moyenne + random.gauss(0, capteur_config.temperature_ecart_type)
     humidite = capteur_config.humidite_moyenne + random.gauss(0, capteur_config.humidite_ecart_type)
     
@@ -89,17 +57,6 @@ def generer_mesure_normale() -> Dict[str, float]:
 
 
 def injecter_anomalie(mesure: Dict[str, float]) -> Dict[str, Any]:
-    """
-    Injecte une anomalie dans la mesure avec une probabilité de 5%.
-    
-    Types d'anomalies :
-    - Surchauffe : +12°C
-    - Sous-température : -10°C
-    - Valeur nulle : 0°C
-    
-    Retourne :
-        Dict avec la mesure (potentiellement modifiée) et un flag 'is_anomaly'
-    """
     is_anomaly = False
     anomaly_type = None
     
@@ -128,15 +85,6 @@ def injecter_anomalie(mesure: Dict[str, float]) -> Dict[str, Any]:
 
 
 def creer_payload(sensor_id: str) -> Dict[str, Any]:
-    """
-    Crée le payload JSON complet pour un capteur donné.
-    
-    Arguments :
-        sensor_id : Identifiant du capteur (ex: "C001")
-    
-    Retourne :
-        Dict contenant toutes les informations du message MQTT
-    """
     # Générer les mesures
     mesure = generer_mesure_normale()
     mesure_avec_anomalie = injecter_anomalie(mesure)
@@ -153,7 +101,6 @@ def creer_payload(sensor_id: str) -> Dict[str, Any]:
 
 
 def afficher_mesure(payload: Dict, is_anomaly: bool, anomaly_type: str):
-    """Affiche la mesure dans la console de manière formatée."""
     if is_anomaly:
         print(f"🚨 [{payload['sensor_id']}] {anomaly_type}")
         print(f"   Température : {payload['temperature']}°C | Humidité : {payload['humidity']}%")
@@ -166,13 +113,6 @@ def afficher_mesure(payload: Dict, is_anomaly: bool, anomaly_type: str):
 # ============================================================================
 
 def main():
-    """
-    Fonction principale du simulateur de capteurs.
-    
-    1. Se connecte au broker MQTT avec TLS
-    2. Boucle infinie pour envoyer des mesures
-    3. Alterne entre les 3 capteurs
-    """
     print("=" * 50)
     print("🛰️  SIMULATEUR DE CAPTEURS IoT")
     print("=" * 50)

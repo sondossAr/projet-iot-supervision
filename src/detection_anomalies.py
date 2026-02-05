@@ -1,21 +1,3 @@
-"""
-🤖 Module de Détection d'Anomalies par IA
-=========================================
-Ce module reçoit les données des capteurs via MQTT et détecte
-automatiquement les anomalies en utilisant l'algorithme Isolation Forest
-et l'analyse statistique par Z-score.
-
-Fonctionnalités :
-- Réception en temps réel des données MQTT
-- Analyse statistique (moyenne, écart-type, Z-score)
-- Détection par Isolation Forest (sklearn)
-- Stockage des données dans un fichier CSV
-- Génération de graphiques des anomalies
-
-Auteur : Projet Examen 5 BIM IA
-Date : Janvier 2026
-"""
-
 import paho.mqtt.client as mqtt
 import json
 import ssl
@@ -50,17 +32,8 @@ except ImportError:
 # CLASSE PRINCIPALE DE DÉTECTION D'ANOMALIES
 # ============================================================================
 
-class DetecteurAnomalies:
-    """
-    Classe principale pour la détection d'anomalies dans les données IoT.
-    
-    Utilise deux méthodes de détection :
-    1. Z-score : Détection basée sur l'écart à la moyenne
-    2. Isolation Forest : Algorithme de Machine Learning non supervisé
-    """
-    
+class DetecteurAnomalies: 
     def __init__(self):
-        """Initialise le détecteur d'anomalies."""
         # Buffer de données pour l'analyse
         self.buffer_taille = ia_config.fenetre_analyse
         self.buffer_donnees: deque = deque(maxlen=self.buffer_taille)
@@ -97,7 +70,6 @@ class DetecteurAnomalies:
         print(f"   Contamination Isolation Forest : {ia_config.contamination * 100}%")
     
     def _connecter_mongodb(self):
-        """Établit la connexion à MongoDB Atlas."""
         if not MONGODB_AVAILABLE:
             print("⚠️  MongoDB non disponible")
             return
@@ -121,7 +93,6 @@ class DetecteurAnomalies:
             self.mongodb_db = None
     
     def sauvegarder_mongodb(self, donnee: Dict):
-        """Sauvegarde une donnée dans MongoDB Atlas."""
         if self.mongodb_db is None:
             return
         
@@ -144,35 +115,11 @@ class DetecteurAnomalies:
     # ========================================================================
     
     def calculer_zscore(self, valeur: float, moyenne: float, ecart_type: float) -> float:
-        """
-        Calcule le Z-score d'une valeur.
-        
-        Le Z-score indique combien d'écarts-types une valeur est éloignée
-        de la moyenne. Un Z-score > 3 ou < -3 indique généralement une anomalie.
-        
-        Arguments :
-            valeur : La valeur à analyser
-            moyenne : La moyenne de référence
-            ecart_type : L'écart-type de référence
-        
-        Retourne :
-            Le Z-score (float)
-        """
         if ecart_type == 0:
             return 0
         return (valeur - moyenne) / ecart_type
     
     def detecter_zscore(self, temperature: float, humidite: float) -> Dict:
-        """
-        Détecte les anomalies par la méthode du Z-score.
-        
-        Arguments :
-            temperature : Température mesurée
-            humidite : Humidité mesurée
-        
-        Retourne :
-            Dict avec is_anomaly et les détails
-        """
         if self.stats["count"] < 10:
             # Pas assez de données pour calculer des statistiques fiables
             return {"is_anomaly": False, "method": "zscore", "details": "Données insuffisantes"}
@@ -191,20 +138,6 @@ class DetecteurAnomalies:
         }
     
     def detecter_isolation_forest(self, temperature: float, humidite: float) -> Dict:
-        """
-        Détecte les anomalies avec l'algorithme Isolation Forest.
-        
-        Isolation Forest isole les observations en sélectionnant aléatoirement
-        une feature et une valeur de split. Les anomalies sont isolées plus
-        rapidement (moins de splits nécessaires).
-        
-        Arguments :
-            temperature : Température mesurée
-            humidite : Humidité mesurée
-        
-        Retourne :
-            Dict avec is_anomaly et les détails
-        """
         if len(self.buffer_donnees) < 20:
             # Pas assez de données pour entraîner le modèle
             return {"is_anomaly": False, "method": "isolation_forest", "details": "Données insuffisantes"}
@@ -237,17 +170,6 @@ class DetecteurAnomalies:
         }
     
     def detecter_anomalie(self, donnee: Dict) -> Dict:
-        """
-        Méthode principale de détection combinant Z-score et Isolation Forest.
-        
-        Une anomalie est signalée si au moins une des deux méthodes la détecte.
-        
-        Arguments :
-            donnee : Dict contenant les données du capteur
-        
-        Retourne :
-            Dict avec le résultat de la détection
-        """
         temperature = donnee["temperature"]
         humidite = donnee["humidity"]
         
@@ -279,7 +201,6 @@ class DetecteurAnomalies:
     # ========================================================================
     
     def mettre_a_jour_stats(self):
-        """Met à jour les statistiques avec les données du buffer."""
         if len(self.buffer_donnees) < 2:
             return
         
@@ -292,15 +213,6 @@ class DetecteurAnomalies:
         self.stats["std_hum"] = df["humidity"].std()
     
     def ajouter_donnee(self, donnee: Dict) -> Dict:
-        """
-        Ajoute une nouvelle donnée et effectue la détection.
-        
-        Arguments :
-            donnee : Dict contenant les données du capteur
-        
-        Retourne :
-            Résultat de la détection d'anomalie
-        """
         # Ajouter au buffer
         self.buffer_donnees.append(donnee)
         
@@ -335,7 +247,6 @@ class DetecteurAnomalies:
     # ========================================================================
     
     def sauvegarder_csv(self):
-        """Sauvegarde l'historique dans un fichier CSV."""
         if not self.historique:
             print("⚠️  Aucune donnée à sauvegarder")
             return
@@ -362,7 +273,6 @@ class DetecteurAnomalies:
             print(f"🚨 Anomalies sauvegardées : {fichier_anomalies} ({len(df_anomalies)} lignes)")
     
     def generer_graphique(self):
-        """Génère un graphique montrant les données et les anomalies."""
         if len(self.historique) < 5:
             print("⚠️  Pas assez de données pour générer un graphique")
             return
@@ -416,7 +326,6 @@ class DetecteurAnomalies:
         print(f"📊 Graphique généré : {chemin_graphique}")
     
     def afficher_stats(self):
-        """Affiche les statistiques actuelles."""
         print("\n" + "=" * 50)
         print("📈 STATISTIQUES ACTUELLES")
         print("=" * 50)
@@ -432,24 +341,13 @@ class DetecteurAnomalies:
 # ============================================================================
 
 class RecepteurMQTT:
-    """
-    Client MQTT qui s'abonne au topic des capteurs et transmet
-    les données au détecteur d'anomalies.
-    """
     
     def __init__(self, detecteur: DetecteurAnomalies):
-        """
-        Initialise le récepteur MQTT.
-        
-        Arguments :
-            detecteur : Instance du détecteur d'anomalies
-        """
         self.detecteur = detecteur
         self.client = None
         self.compteur_messages = 0
     
     def on_connect(self, client, userdata, flags, reason_code, properties=None):
-        """Callback de connexion au broker."""
         is_success = str(reason_code) == "Success" or reason_code == 0
         
         if is_success:
@@ -461,7 +359,6 @@ class RecepteurMQTT:
             print(f"❌ Erreur de connexion : {reason_code}")
     
     def on_message(self, client, userdata, msg):
-        """Callback de réception d'un message."""
         try:
             # Décoder le message JSON
             payload = json.loads(msg.payload.decode())
@@ -498,12 +395,10 @@ class RecepteurMQTT:
             print(f"⚠️  Erreur de traitement : {e}")
     
     def on_disconnect(self, client, userdata, rc, properties=None, reason_code=None):
-        """Callback de déconnexion."""
         if rc != 0:
             print(f"⚠️  Déconnexion inattendue")
     
     def demarrer(self):
-        """Démarre le client MQTT et la réception des données."""
         print("\n" + "=" * 50)
         print("🤖 MODULE DE DÉTECTION D'ANOMALIES")
         print("=" * 50)
@@ -553,13 +448,6 @@ class RecepteurMQTT:
 # ============================================================================
 
 def analyser_fichier_csv(chemin_csv: str):
-    """
-    Analyse un fichier CSV existant pour détecter les anomalies.
-    Mode batch pour traiter des données historiques.
-    
-    Arguments :
-        chemin_csv : Chemin vers le fichier CSV
-    """
     print(f"\n📂 Analyse du fichier : {chemin_csv}")
     
     # Charger les données
@@ -595,10 +483,6 @@ def analyser_fichier_csv(chemin_csv: str):
 # ============================================================================
 
 def main():
-    """
-    Fonction principale.
-    Lance le récepteur MQTT pour la détection en temps réel.
-    """
     # Créer le détecteur d'anomalies
     detecteur = DetecteurAnomalies()
     

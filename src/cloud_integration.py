@@ -1,13 +1,3 @@
-"""
-☁️ Module d'Intégration Cloud
-==============================
-Ce module gère le stockage distant des données via MongoDB Atlas.
-
-Fonctionnalités :
-- Stockage MongoDB Atlas (base de données Cloud)
-- Intégration avec le service d'email (email_service.py)
-"""
-
 import os
 from datetime import datetime, timezone
 from typing import Dict, List
@@ -23,7 +13,6 @@ load_dotenv()
 
 @dataclass
 class CloudConfig:
-    """Configuration des services Cloud"""
     
     # MongoDB Atlas
     mongodb_uri: str = os.getenv("MONGODB_URI", "")
@@ -46,20 +35,8 @@ cloud_config = CloudConfig()
 # ============================================================================
 
 class MongoDBStorage:
-    """
-    Gestionnaire de stockage MongoDB Atlas.
-    
-    MongoDB Atlas est une base de données NoSQL Cloud qui permet
-    de stocker les données IoT de manière scalable et sécurisée.
-    """
     
     def __init__(self, uri: str = None):
-        """
-        Initialise la connexion MongoDB.
-        
-        Arguments :
-            uri : URI de connexion MongoDB Atlas
-        """
         self.uri = uri or cloud_config.mongodb_uri
         self.client = None
         self.db = None
@@ -69,7 +46,6 @@ class MongoDBStorage:
             self._connect()
     
     def _connect(self):
-        """Établit la connexion à MongoDB Atlas."""
         try:
             from pymongo import MongoClient
             from pymongo.server_api import ServerApi
@@ -90,7 +66,6 @@ class MongoDBStorage:
             self.connected = False
     
     def sauvegarder_mesure(self, mesure: Dict) -> bool:
-        """Sauvegarde une mesure dans MongoDB."""
         if not self.connected:
             return False
         
@@ -104,7 +79,6 @@ class MongoDBStorage:
             return False
     
     def sauvegarder_anomalie(self, anomalie: Dict) -> bool:
-        """Sauvegarde une anomalie dans la collection dédiée."""
         if not self.connected:
             return False
         
@@ -118,7 +92,6 @@ class MongoDBStorage:
             return False
     
     def get_mesures_recentes(self, limit: int = 100) -> List[Dict]:
-        """Récupère les mesures récentes depuis MongoDB."""
         if not self.connected:
             return []
         
@@ -131,7 +104,6 @@ class MongoDBStorage:
             return []
     
     def get_anomalies(self, limit: int = 50) -> List[Dict]:
-        """Récupère les anomalies récentes depuis MongoDB."""
         if not self.connected:
             return []
         
@@ -144,7 +116,6 @@ class MongoDBStorage:
             return []
     
     def close(self):
-        """Ferme la connexion MongoDB."""
         if self.client:
             self.client.close()
             self.connected = False
@@ -156,13 +127,8 @@ class MongoDBStorage:
 # ============================================================================
 
 class CloudManager:
-    """
-    Gestionnaire unifié pour les services Cloud.
-    Centralise MongoDB et les alertes email.
-    """
     
     def __init__(self):
-        """Initialise les services Cloud."""
         print("\n" + "=" * 50)
         print("☁️  INITIALISATION DES SERVICES CLOUD")
         print("=" * 50)
@@ -181,7 +147,6 @@ class CloudManager:
         print("=" * 50 + "\n")
     
     def traiter_mesure(self, mesure: Dict):
-        """Traite une mesure : stockage et vérification des alertes."""
         # Sauvegarder dans MongoDB
         self.storage.sauvegarder_mesure(mesure.copy())
         
@@ -194,7 +159,6 @@ class CloudManager:
             self.email.alerte_temperature_critique(sensor_id, temperature)
     
     def traiter_anomalie(self, anomalie: Dict):
-        """Traite une anomalie détectée."""
         # Sauvegarder dans MongoDB
         self.storage.sauvegarder_anomalie(anomalie.copy())
         
@@ -206,7 +170,6 @@ class CloudManager:
             self.email.alerte_anomalie(sensor_id, temperature, humidity)
     
     def close(self):
-        """Ferme toutes les connexions."""
         self.storage.close()
 
 

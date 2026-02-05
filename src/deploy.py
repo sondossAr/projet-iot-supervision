@@ -1,14 +1,3 @@
-"""
-🚀 Script de Déploiement Cloud
-================================
-Ce script prépare le projet pour le déploiement sur Streamlit Cloud.
-
-Fonctionnalités:
-- Vérifie les configurations (.env)
-- Teste les connexions cloud (MongoDB, MQTT)
-- Affiche les instructions de déploiement
-"""
-
 import os
 import sys
 
@@ -20,7 +9,6 @@ load_dotenv()
 
 
 def verifier_configuration():
-    """Vérifie que toutes les configurations sont présentes."""
     print("\n" + "=" * 60)
     print("🔍 VÉRIFICATION DE LA CONFIGURATION")
     print("=" * 60)
@@ -59,7 +47,6 @@ def verifier_configuration():
 
 
 def tester_connexions():
-    """Teste les connexions aux services cloud."""
     print("\n" + "=" * 60)
     print("🔌 TEST DES CONNEXIONS")
     print("=" * 60)
@@ -100,7 +87,6 @@ def tester_connexions():
 
 
 def generer_fichiers_cloud():
-    """Génère les fichiers pour le déploiement cloud."""
     print("\n" + "=" * 60)
     print("📁 VÉRIFICATION DES FICHIERS DE DÉPLOIEMENT")
     print("=" * 60)
@@ -134,66 +120,9 @@ def generer_fichiers_cloud():
     print("   • .streamlit/config.toml (configuration optionnelle)")
 
 
-def afficher_instructions():
-    """Affiche les instructions de déploiement."""
-    print("\n" + "=" * 60)
-    print("📚 INSTRUCTIONS DE DÉPLOIEMENT")
-    print("=" * 60)
-    
-    print("""
-┌─────────────────────────────────────────────────────────────┐
-│  🌐 STREAMLIT CLOUD (Recommandé - Gratuit)                  │
-├─────────────────────────────────────────────────────────────┤
-│  1. Aller sur https://share.streamlit.io                    │
-│  2. Se connecter avec GitHub                                │
-│  3. Sélectionner le repo: sondossAr/projet-iot-supervision  │
-│  4. Main file: src/dashboard.py                             │
-│  5. Ajouter les secrets dans l'interface Streamlit:         │
-│                                                             │
-│     [mongodb]                                               │
-│     uri = "mongodb+srv://user:pass@cluster.mongodb.net/"    │
-│                                                             │
-│     [mqtt]                                                  │
-│     host = "xxx.s1.eu.hivemq.cloud"                         │
-│     port = 8883                                             │
-│     username = "username"                                   │
-│     password = "password"                                   │
-│                                                             │
-│  6. Cliquer sur Deploy                                      │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│  💻 EXÉCUTION LOCALE (Simulateur + Détection)               │
-├─────────────────────────────────────────────────────────────┤
-│  Les scripts suivants s'exécutent sur votre PC:             │
-│                                                             │
-│  Terminal 1: python src/simulateur_capteurs.py              │
-│  Terminal 2: python src/detection_anomalies.py              │
-│                                                             │
-│  Ces scripts publient vers HiveMQ et stockent dans MongoDB. │
-│  Le dashboard Streamlit Cloud lit les données en temps réel.│
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│  📧 CONFIGURATION EMAIL (Gmail SMTP)                        │
-├─────────────────────────────────────────────────────────────┤
-│  1. Activer 2FA sur votre compte Gmail                      │
-│  2. Créer un "App Password":                                │
-│     Google Account → Security → App passwords               │
-│  3. Ajouter dans .env:                                      │
-│     SMTP_HOST=smtp.gmail.com                                │
-│     SMTP_PORT=587                                           │
-│     SMTP_USER=votre.email@gmail.com                         │
-│     SMTP_PASSWORD=xxxx xxxx xxxx xxxx                       │
-│     EMAIL_TO=destinataire@email.com                         │
-└─────────────────────────────────────────────────────────────┘
-""")
-
-
 if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("🚀 PRÉPARATION AU DÉPLOIEMENT CLOUD")
-    print("   Projet IoT Supervision - 5e BIM")
     print("=" * 60)
     
     # 1. Vérifier la configuration
@@ -202,11 +131,8 @@ if __name__ == "__main__":
     # 2. Tester les connexions
     tester_connexions()
     
-    # 3. Générer les fichiers
+    # 3. Vérifier les fichiers
     generer_fichiers_cloud()
-    
-    # 4. Afficher les instructions
-    afficher_instructions()
     
     print("\n" + "=" * 60)
     if config_ok:

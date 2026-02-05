@@ -62,7 +62,3 @@ projet_IoT/
 - scikit-learn (détection d'anomalies)
 - Streamlit (dashboard)
 - HiveMQ Cloud (broker MQTT)
-
-## Auteur
-
-Projet réalisé dans le cadre de l'examen 5 BIM IA - Janvier 2026

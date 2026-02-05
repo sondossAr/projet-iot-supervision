@@ -1,7 +1,6 @@
 # Configuration du projet IoT
 # ============================
 # Ce fichier contient la configuration MQTT et les paramètres du système
-# 
 # Les credentials sont stockés dans le fichier .env pour la sécurité
 
 import os
@@ -12,21 +11,9 @@ from dotenv import load_dotenv
 # Charger les variables d'environnement depuis .env
 load_dotenv()
 
-# ============================================================================
-# CONFIGURATION MQTT - HIVEMQ CLOUD
-# ============================================================================
-# 
-# Instructions pour configurer HiveMQ Cloud :
-# 1. Aller sur https://www.hivemq.com/cloud/
-# 2. Créer un compte gratuit
-# 3. Créer un cluster MQTT
-# 4. Ajouter les credentials (Access Management)
-# 5. Copier les informations ci-dessous
-# ============================================================================
 
 @dataclass
 class MQTTConfig:
-    """Configuration du broker MQTT"""
     
     # Paramètres de connexion HiveMQ Cloud (chargés depuis .env)
     host: str = os.getenv("MQTT_HOST", "")
@@ -49,7 +36,6 @@ class MQTTConfig:
 
 @dataclass  
 class CapteurConfig:
-    """Configuration des capteurs simulés"""
     
     # Liste des identifiants de capteurs
     sensor_ids: List[str] = None
@@ -81,7 +67,6 @@ class CapteurConfig:
 
 @dataclass
 class IAConfig:
-    """Configuration du module de détection d'anomalies"""
     
     # Paramètres Isolation Forest
     contamination: float = 0.05  # 5% d'anomalies attendues
@@ -101,7 +86,6 @@ class IAConfig:
 
 @dataclass
 class DashboardConfig:
-    """Configuration du tableau de bord Streamlit"""
     
     # Intervalle de rafraîchissement (en secondes)
     refresh_interval: int = 5
@@ -123,7 +107,6 @@ class DashboardConfig:
 
 @dataclass
 class StockageConfig:
-    """Configuration du stockage des données"""
     
     # Stockage local
     dossier_data: str = "data"
@@ -151,10 +134,6 @@ stockage_config = StockageConfig()
 # ============================================================================
 
 def valider_configuration() -> bool:
-    """
-    Vérifie que la configuration est valide et complète.
-    Retourne True si tout est OK, False sinon.
-    """
     erreurs = []
     
     # Vérifier la configuration MQTT
@@ -181,7 +160,6 @@ def valider_configuration() -> bool:
 
 
 def afficher_configuration():
-    """Affiche la configuration actuelle (sans les mots de passe)"""
     print("=" * 60)
     print("CONFIGURATION DU SYSTÈME IoT")
     print("=" * 60)

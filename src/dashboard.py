@@ -1,22 +1,3 @@
-"""
-📊 Dashboard Streamlit - Supervision IoT
-========================================
-Interface web interactive pour visualiser les données des capteurs
-et les anomalies détectées en temps réel.
-
-Fonctionnalités :
-- Affichage graphique temps réel (température + humidité)
-- Tableau des dernières mesures
-- Encadré d'alertes pour les anomalies
-- Rafraîchissement automatique toutes les 5 secondes
-- Export CSV des données
-
-Lancement : streamlit run dashboard.py
-
-Auteur : Projet Examen 5 BIM IA
-Date : Janvier 2026
-"""
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -116,7 +97,6 @@ st.markdown("""
 # ============================================================================
 
 def get_mongodb_uri():
-    """Récupère l'URI MongoDB depuis st.secrets ou .env"""
     try:
         # Mode Streamlit Cloud
         return st.secrets["mongodb"]["uri"]
@@ -126,7 +106,6 @@ def get_mongodb_uri():
 
 @st.cache_resource
 def get_mongodb_client():
-    """Crée une connexion MongoDB réutilisable."""
     uri = get_mongodb_uri()
     if uri:
         try:
@@ -149,10 +128,6 @@ def get_mongodb_client():
 
 @st.cache_data(ttl=5)  # Cache de 5 secondes
 def charger_historique():
-    """
-    Charge les données depuis MongoDB Atlas.
-    Fallback vers le fichier CSV si MongoDB non disponible.
-    """
     # Essayer MongoDB d'abord
     client = get_mongodb_client()
     if client:
@@ -193,10 +168,6 @@ def charger_historique():
 
 @st.cache_data(ttl=5)
 def charger_anomalies():
-    """
-    Charge les anomalies depuis MongoDB Atlas.
-    Fallback vers le fichier CSV si MongoDB non disponible.
-    """
     # Essayer MongoDB d'abord
     client = get_mongodb_client()
     if client:
@@ -233,9 +204,6 @@ def charger_anomalies():
 
 
 def calculer_statistiques(df):
-    """
-    Calcule les statistiques principales des données.
-    """
     if df.empty:
         return {
             "total_mesures": 0,
@@ -266,7 +234,6 @@ def calculer_statistiques(df):
 # ============================================================================
 
 def afficher_header():
-    """Affiche l'en-tête du dashboard."""
     col1, col2, col3 = st.columns([1, 3, 1])
     
     with col2:
@@ -288,7 +255,6 @@ def afficher_header():
 
 
 def afficher_metriques(stats):
-    """Affiche les métriques principales."""
     col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
@@ -329,7 +295,6 @@ def afficher_metriques(stats):
 
 
 def afficher_graphiques(df):
-    """Affiche les graphiques de température et humidité."""
     if df.empty:
         st.warning("⚠️ Aucune donnée disponible. Lancez le simulateur de capteurs.")
         return
@@ -422,7 +387,6 @@ def afficher_graphiques(df):
 
 
 def afficher_alertes(df_anomalies):
-    """Affiche les alertes d'anomalies récentes."""
     st.subheader("🚨 Alertes Récentes")
     
     if df_anomalies.empty:
@@ -464,7 +428,6 @@ def afficher_alertes(df_anomalies):
 
 
 def afficher_tableau(df):
-    """Affiche le tableau des dernières mesures."""
     st.subheader("📋 Dernières Mesures")
     
     if df.empty:
@@ -502,7 +465,6 @@ def afficher_tableau(df):
 
 
 def afficher_sidebar():
-    """Affiche la barre latérale avec les contrôles."""
     with st.sidebar:
         st.header("⚙️ Configuration")
         
@@ -562,7 +524,6 @@ def afficher_sidebar():
 
 
 def afficher_graphique_capteurs(df):
-    """Affiche un graphique par capteur."""
     if df.empty:
         return
     
@@ -606,7 +567,6 @@ def afficher_graphique_capteurs(df):
 # ============================================================================
 
 def main():
-    """Fonction principale du dashboard."""
     
     # Sidebar
     auto_refresh, refresh_rate = afficher_sidebar()
@@ -649,8 +609,7 @@ def main():
     st.divider()
     st.markdown(f"""
     <div style="text-align: center; color: gray; font-size: 12px;">
-        📊 Dashboard IoT - Dernière mise à jour : {datetime.now().strftime('%H:%M:%S')} | 
-        Projet Examen 5 BIM IA - Janvier 2026
+        📊 Dashboard IoT - Dernière mise à jour : {datetime.now().strftime('%H:%M:%S')}
     </div>
     """, unsafe_allow_html=True)
     
