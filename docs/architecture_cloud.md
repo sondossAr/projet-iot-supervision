@@ -43,21 +43,20 @@
                                      │ MQTT Subscribe
                                      ▼
                     ┌────────────────────────────────┐
-                    │   RAILWAY.APP / HEROKU         │
-                    │   (Backend Python)             │
+                    │   PC LOCAL (Backend Python)    │
+                    │                                │
+                    │  ┌──────────────────────────┐  │
+                    │  │  simulateur_capteurs.py  │  │
+                    │  │  • Publish MQTT          │  │
+                    │  └──────────────────────────┘  │
                     │                                │
                     │  ┌──────────────────────────┐  │
                     │  │  detection_anomalies.py  │  │
-                    │  │  • Réception MQTT        │  │
+                    │  │  • Subscribe MQTT        │  │
                     │  │  • Isolation Forest      │  │
                     │  │  • Z-score               │  │
-                    │  └────────────┬─────────────┘  │
-                    │               │                │
-                    │               ▼                │
-                    │  ┌──────────────────────────┐  │
-                    │  │  cloud_integration.py    │  │
                     │  │  • MongoDB storage       │  │
-                    │  │  • Gmail SMTP alerts   │  │
+                    │  │  • Gmail SMTP alerts     │  │
                     │  └──────────────────────────┘  │
                     └────────────────┬───────────────┘
                                      │
@@ -109,21 +108,6 @@
   ✅ HTTPS : Certificat SSL automatique sur Streamlit Cloud
 
 
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                         COÛTS (Offres gratuites)                                 │
-└─────────────────────────────────────────────────────────────────────────────────┘
-
-  Service          │ Offre gratuite              │ Limites
-  ─────────────────┼─────────────────────────────┼──────────────────────────
-  HiveMQ Cloud     │ Serverless (gratuit)        │ 10 GB/mois
-  MongoDB Atlas    │ M0 Cluster                  │ 512 MB storage
-  Gmail SMTP       │ Gratuit                     │ 500 emails/jour
-  Streamlit Cloud  │ Community tier              │ 1 app publique
-  Railway.app      │ Hobby tier                  │ 500h/mois
-
-  💰 COÛT TOTAL : 0€/mois pour un projet de démonstration
-```
-
 # Guide de déploiement
 
 ## 1. Préparer le code
@@ -148,14 +132,42 @@ projet_IoT/
 2. Aller sur https://share.streamlit.io
 3. Connecter le repo GitHub
 4. Sélectionner `src/dashboard.py` comme fichier principal
-5. Ajouter les secrets dans les paramètres
+5. Ajouter les secrets dans les paramètres :
 
-## 3. Déployer le backend sur Railway
+```toml
+[mongodb]
+uri = "mongodb+srv://user:password@cluster.mongodb.net/"
 
-1. Créer un compte sur https://railway.app
-2. Créer un nouveau projet depuis GitHub
-3. Configurer les variables d'environnement
-4. Le backend se déploie automatiquement
+[mqtt]
+host = "xxx.s1.eu.hivemq.cloud"
+port = 8883
+username = "username"
+password = "password"
+
+[email]
+smtp_host = "smtp.gmail.com"
+smtp_port = 587
+smtp_user = "votre.email@gmail.com"
+smtp_password = "xxxx xxxx xxxx xxxx"
+email_to = "destinataire@email.com"
+```
+
+6. Cliquer sur "Deploy"
+
+## 3. Lancer le simulateur (local)
+
+Le simulateur de capteurs et la détection d'anomalies s'exécutent sur votre PC :
+
+```bash
+# Terminal 1 : Simulateur de capteurs
+python src/simulateur_capteurs.py
+
+# Terminal 2 : Détection d'anomalies  
+python src/detection_anomalies.py
+```
+
+Ces scripts locaux publient vers HiveMQ Cloud et stockent dans MongoDB Atlas.
+Le dashboard Streamlit Cloud lit les données depuis MongoDB en temps réel.
 
 ## 4. Configurer MongoDB Atlas
 
