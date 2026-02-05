@@ -246,10 +246,9 @@ def afficher_header():
     
     with col3:
         # Indicateur de connexion
-        st.markdown(f"""
+        st.markdown("""
         <div style="text-align: right; padding-top: 20px;">
-            <span class="status-connected">🟢 Connecté</span><br>
-            <small>Broker: {mqtt_config.host[:20]}...</small>
+            <span class="status-connected">🟢 Connecté</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -471,20 +470,6 @@ def afficher_sidebar():
         # Rafraîchissement automatique
         auto_refresh = st.checkbox("🔄 Rafraîchissement auto", value=True)
         refresh_rate = st.slider("Intervalle (secondes)", 3, 30, 5)
-        
-        st.divider()
-        
-        # Informations système
-        st.header("📡 Système")
-        st.info(f"""
-        **Broker MQTT:**  
-        `{mqtt_config.host[:25]}...`
-        
-        **Port:** {mqtt_config.port}
-        
-        **Topic:**  
-        `{mqtt_config.topic_temperature}`
-        """)
         
         st.divider()
         
