@@ -1,13 +1,6 @@
 # 📋 DOCUMENT DE RENDU FINAL
 ## Projet : Supervision Intelligente de Capteurs IoT avec Détection d'Anomalies
 
----
-
-**Auteur** : Projet Examen 5 BIM IA  
-**Date** : 27 Janvier 2026  
-**Version** : 1.0
-
----
 
 ## 📌 Résumé du Projet
 
@@ -77,7 +70,9 @@ projet_IoT/
 │   ├── simulateur_capteurs.py         # Simulation des capteurs IoT
 │   ├── detection_anomalies.py         # Module IA de détection
 │   ├── dashboard.py                   # Interface web Streamlit
-│   └── cloud_integration.py           # Intégration MongoDB
+│   ├── cloud_integration.py           # Intégration MongoDB
+│   ├── email_service.py               # Service d'alertes Gmail SMTP
+│   └── deploy.py                      # Script de déploiement
 ├── data/
 │   ├── historique.csv                 # Données historiques
 │   ├── anomalies.csv                  # Anomalies détectées

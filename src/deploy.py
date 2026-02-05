@@ -1,12 +1,12 @@
 """
 🚀 Script de Déploiement Cloud
 ================================
-Ce script prépare le projet pour le déploiement sur Streamlit Cloud ou Railway.
+Ce script prépare le projet pour le déploiement sur Streamlit Cloud.
 
 Fonctionnalités:
-- Génère les fichiers de configuration
-- Vérifie les dépendances
-- Teste les connexions cloud
+- Vérifie les configurations (.env)
+- Teste les connexions cloud (MongoDB, MQTT)
+- Affiche les instructions de déploiement
 """
 
 import os
@@ -102,46 +102,36 @@ def tester_connexions():
 def generer_fichiers_cloud():
     """Génère les fichiers pour le déploiement cloud."""
     print("\n" + "=" * 60)
-    print("📁 GÉNÉRATION DES FICHIERS DE DÉPLOIEMENT")
+    print("📁 VÉRIFICATION DES FICHIERS DE DÉPLOIEMENT")
     print("=" * 60)
     
     base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
-    # Procfile pour Railway/Heroku
-    procfile_content = """web: streamlit run src/dashboard.py --server.port=$PORT --server.address=0.0.0.0
-worker: python src/detection_anomalies.py
-"""
+    # Vérifier requirements.txt
+    req_path = os.path.join(base_path, "requirements.txt")
+    if os.path.exists(req_path):
+        print("   ✅ requirements.txt existe")
+    else:
+        print("   ❌ requirements.txt manquant!")
     
-    procfile_path = os.path.join(base_path, "Procfile")
-    with open(procfile_path, "w") as f:
-        f.write(procfile_content)
-    print(f"   ✅ Procfile créé")
+    # Vérifier .streamlit/config.toml
+    streamlit_config = os.path.join(base_path, ".streamlit", "config.toml")
+    if os.path.exists(streamlit_config):
+        print("   ✅ .streamlit/config.toml existe")
+    else:
+        print("   ⚠️  .streamlit/config.toml non trouvé")
     
-    # runtime.txt
-    runtime_content = "python-3.11.0\n"
-    runtime_path = os.path.join(base_path, "runtime.txt")
-    with open(runtime_path, "w") as f:
-        f.write(runtime_content)
-    print(f"   ✅ runtime.txt créé")
+    # Vérifier dashboard.py
+    dashboard_path = os.path.join(base_path, "src", "dashboard.py")
+    if os.path.exists(dashboard_path):
+        print("   ✅ src/dashboard.py existe")
+    else:
+        print("   ❌ src/dashboard.py manquant!")
     
-    # .dockerignore
-    dockerignore_content = """.venv/
-__pycache__/
-*.pyc
-.env
-.git/
-*.md
-docs/
-"""
-    dockerignore_path = os.path.join(base_path, ".dockerignore")
-    with open(dockerignore_path, "w") as f:
-        f.write(dockerignore_content)
-    print(f"   ✅ .dockerignore créé")
-    
-    print("\n📋 Fichiers générés pour le déploiement:")
-    print("   • Procfile (Railway/Heroku)")
-    print("   • runtime.txt (version Python)")
-    print("   • .dockerignore")
+    print("\n📋 Fichiers requis pour Streamlit Cloud:")
+    print("   • requirements.txt (dépendances Python)")
+    print("   • src/dashboard.py (fichier principal)")
+    print("   • .streamlit/config.toml (configuration optionnelle)")
 
 
 def afficher_instructions():
@@ -152,23 +142,36 @@ def afficher_instructions():
     
     print("""
 ┌─────────────────────────────────────────────────────────────┐
-│  🌐 OPTION 1: STREAMLIT CLOUD (Recommandé - Gratuit)       │
+│  🌐 STREAMLIT CLOUD (Recommandé - Gratuit)                  │
 ├─────────────────────────────────────────────────────────────┤
 │  1. Aller sur https://share.streamlit.io                    │
 │  2. Se connecter avec GitHub                                │
 │  3. Sélectionner le repo: sondossAr/projet-iot-supervision  │
 │  4. Main file: src/dashboard.py                             │
-│  5. Ajouter les secrets dans l'interface Streamlit          │
+│  5. Ajouter les secrets dans l'interface Streamlit:         │
+│                                                             │
+│     [mongodb]                                               │
+│     uri = "mongodb+srv://user:pass@cluster.mongodb.net/"    │
+│                                                             │
+│     [mqtt]                                                  │
+│     host = "xxx.s1.eu.hivemq.cloud"                         │
+│     port = 8883                                             │
+│     username = "username"                                   │
+│     password = "password"                                   │
+│                                                             │
+│  6. Cliquer sur Deploy                                      │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
-│  🚂 OPTION 2: RAILWAY.APP                                   │
+│  💻 EXÉCUTION LOCALE (Simulateur + Détection)               │
 ├─────────────────────────────────────────────────────────────┤
-│  1. Aller sur https://railway.app                           │
-│  2. New Project → Deploy from GitHub                        │
-│  3. Sélectionner le repo                                    │
-│  4. Ajouter les variables d'environnement                   │
-│  5. Le Procfile sera automatiquement détecté                │
+│  Les scripts suivants s'exécutent sur votre PC:             │
+│                                                             │
+│  Terminal 1: python src/simulateur_capteurs.py              │
+│  Terminal 2: python src/detection_anomalies.py              │
+│                                                             │
+│  Ces scripts publient vers HiveMQ et stockent dans MongoDB. │
+│  Le dashboard Streamlit Cloud lit les données en temps réel.│
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐

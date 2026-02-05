@@ -69,8 +69,7 @@
    │  • Stockage NoSQL│   │  • Alertes email │   │  • Dashboard web │
    │  • Cluster M0    │   │  • App Password  │   │  • Auto-refresh  │
    │  • Backup auto   │   │  • Gratuit       │   │  • HTTPS gratuit │
-   │                  │   │                  │   │                  │
-   │  Gratuit: 512 MB │   │  Gratuit: 500/j  │   │  Gratuit: 1 app  │
+   │                  │   │                  │   │                  │ 
    └──────────────────┘   └──────────────────┘   └──────────────────┘
 
 
