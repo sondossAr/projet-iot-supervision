@@ -590,14 +590,6 @@ def main():
         # Tableau des mesures
         afficher_tableau(df)
     
-    # Pied de page
-    st.divider()
-    st.markdown(f"""
-    <div style="text-align: center; color: gray; font-size: 12px;">
-        📊 Dashboard IoT - Dernière mise à jour : {datetime.now().strftime('%H:%M:%S')}
-    </div>
-    """, unsafe_allow_html=True)
-    
     # Rafraîchissement automatique
     if auto_refresh:
         time.sleep(refresh_rate)
