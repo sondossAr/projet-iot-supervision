@@ -594,7 +594,7 @@ def main():
     st.divider()
     st.markdown(f"""
     <div style="text-align: center; color: gray; font-size: 12px;">
-        📊 Dashboard IoT - Dernière mise à jour : {datetime.now().strftime('%H:%M:%S')}
+        📊 Dashboard IoT
     </div>
     """, unsafe_allow_html=True)
     
