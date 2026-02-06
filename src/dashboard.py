@@ -374,7 +374,7 @@ def afficher_graphiques(df):
     fig.update_layout(
         height=500,
         showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend=dict(orientation="h", yanchor="bottom", y=1.08, xanchor="right", x=1),
         hovermode="x unified"
     )
     
